@@ -1,0 +1,387 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		6C570D571866C7BA006E6AD1 /* Archive */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 6C570D581866C7BA006E6AD1 /* Build configuration list for PBXAggregateTarget "Archive" */;
+			buildPhases = (
+				6C570D5B1866C7F2006E6AD1 /* ShellScript */,
+			);
+			dependencies = (
+				6C570D5D1866C809006E6AD1 /* PBXTargetDependency */,
+			);
+			name = Archive;
+			productName = SyncTwitterClientArchive;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		6C958D56185A9B8D008AFD55 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6C958D55185A9B8D008AFD55 /* Cocoa.framework */; };
+		6C958D60185A9B8D008AFD55 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6C958D5E185A9B8D008AFD55 /* InfoPlist.strings */; };
+		6C958D6A185A9BEE008AFD55 /* SyncTwitterClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C958D69185A9BEE008AFD55 /* SyncTwitterClient.m */; };
+		6C958D6E185AA348008AFD55 /* STCPluginForTwitterMac.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C958D6D185AA348008AFD55 /* STCPluginForTwitterMac.m */; };
+		6C958D71185AA36E008AFD55 /* STCPluginForTweetbotMac.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C958D70185AA36E008AFD55 /* STCPluginForTweetbotMac.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6C570D5C1866C809006E6AD1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6C958D4A185A9B8D008AFD55 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6C958D51185A9B8D008AFD55;
+			remoteInfo = SyncTwitterClient;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		6C570D501865B4DB006E6AD1 /* TweetbotMacProtocols.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TweetbotMacProtocols.h; sourceTree = "<group>"; };
+		6C570D5E1866D104006E6AD1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		6C6D3B98185ECE2F00BF622E /* TwitterMacProtocols.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TwitterMacProtocols.h; sourceTree = "<group>"; };
+		6C958D52185A9B8D008AFD55 /* SyncTwitterClient.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SyncTwitterClient.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		6C958D55185A9B8D008AFD55 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		6C958D58185A9B8D008AFD55 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		6C958D59185A9B8D008AFD55 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		6C958D5A185A9B8D008AFD55 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		6C958D5D185A9B8D008AFD55 /* SyncTwitterClient-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "SyncTwitterClient-Info.plist"; sourceTree = "<group>"; };
+		6C958D5F185A9B8D008AFD55 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		6C958D61185A9B8D008AFD55 /* SyncTwitterClient-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SyncTwitterClient-Prefix.pch"; sourceTree = "<group>"; };
+		6C958D68185A9BEE008AFD55 /* SyncTwitterClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncTwitterClient.h; sourceTree = "<group>"; };
+		6C958D69185A9BEE008AFD55 /* SyncTwitterClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncTwitterClient.m; sourceTree = "<group>"; };
+		6C958D6C185AA348008AFD55 /* STCPluginForTwitterMac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STCPluginForTwitterMac.h; sourceTree = "<group>"; };
+		6C958D6D185AA348008AFD55 /* STCPluginForTwitterMac.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STCPluginForTwitterMac.m; sourceTree = "<group>"; };
+		6C958D6F185AA36E008AFD55 /* STCPluginForTweetbotMac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STCPluginForTweetbotMac.h; sourceTree = "<group>"; };
+		6C958D70185AA36E008AFD55 /* STCPluginForTweetbotMac.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STCPluginForTweetbotMac.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6C958D4F185A9B8D008AFD55 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6C958D56185A9B8D008AFD55 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		6C958D49185A9B8D008AFD55 = {
+			isa = PBXGroup;
+			children = (
+				6C570D5E1866D104006E6AD1 /* README.md */,
+				6C958D5B185A9B8D008AFD55 /* SyncTwitterClient */,
+				6C958D54185A9B8D008AFD55 /* Frameworks */,
+				6C958D53185A9B8D008AFD55 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		6C958D53185A9B8D008AFD55 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6C958D52185A9B8D008AFD55 /* SyncTwitterClient.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6C958D54185A9B8D008AFD55 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6C958D55185A9B8D008AFD55 /* Cocoa.framework */,
+				6C958D57185A9B8D008AFD55 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6C958D57185A9B8D008AFD55 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6C958D58185A9B8D008AFD55 /* Foundation.framework */,
+				6C958D59185A9B8D008AFD55 /* CoreData.framework */,
+				6C958D5A185A9B8D008AFD55 /* AppKit.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		6C958D5B185A9B8D008AFD55 /* SyncTwitterClient */ = {
+			isa = PBXGroup;
+			children = (
+				6C958D68185A9BEE008AFD55 /* SyncTwitterClient.h */,
+				6C958D69185A9BEE008AFD55 /* SyncTwitterClient.m */,
+				6C570D501865B4DB006E6AD1 /* TweetbotMacProtocols.h */,
+				6C958D6F185AA36E008AFD55 /* STCPluginForTweetbotMac.h */,
+				6C958D70185AA36E008AFD55 /* STCPluginForTweetbotMac.m */,
+				6C6D3B98185ECE2F00BF622E /* TwitterMacProtocols.h */,
+				6C958D6C185AA348008AFD55 /* STCPluginForTwitterMac.h */,
+				6C958D6D185AA348008AFD55 /* STCPluginForTwitterMac.m */,
+				6C958D5C185A9B8D008AFD55 /* Supporting Files */,
+			);
+			path = SyncTwitterClient;
+			sourceTree = "<group>";
+		};
+		6C958D5C185A9B8D008AFD55 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				6C958D5D185A9B8D008AFD55 /* SyncTwitterClient-Info.plist */,
+				6C958D5E185A9B8D008AFD55 /* InfoPlist.strings */,
+				6C958D61185A9B8D008AFD55 /* SyncTwitterClient-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6C958D51185A9B8D008AFD55 /* SyncTwitterClient */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6C958D64185A9B8D008AFD55 /* Build configuration list for PBXNativeTarget "SyncTwitterClient" */;
+			buildPhases = (
+				6C958D4E185A9B8D008AFD55 /* Sources */,
+				6C958D4F185A9B8D008AFD55 /* Frameworks */,
+				6C958D50185A9B8D008AFD55 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SyncTwitterClient;
+			productName = SyncTwitterClient;
+			productReference = 6C958D52185A9B8D008AFD55 /* SyncTwitterClient.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6C958D4A185A9B8D008AFD55 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0500;
+				ORGANIZATIONNAME = "Norio Nomura";
+			};
+			buildConfigurationList = 6C958D4D185A9B8D008AFD55 /* Build configuration list for PBXProject "SyncTwitterClient" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 6C958D49185A9B8D008AFD55;
+			productRefGroup = 6C958D53185A9B8D008AFD55 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6C958D51185A9B8D008AFD55 /* SyncTwitterClient */,
+				6C570D571866C7BA006E6AD1 /* Archive */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6C958D50185A9B8D008AFD55 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6C958D60185A9B8D008AFD55 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		6C570D5B1866C7F2006E6AD1 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"${CONFIGURATION}\" = \"Release\" ]; then\ncd ${TARGET_BUILD_DIR}\nzip -r ${SRCROOT}/downloads/${PRODUCT_NAME}-${VERSION}.zip *.bundle\nfi";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6C958D4E185A9B8D008AFD55 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6C958D6E185AA348008AFD55 /* STCPluginForTwitterMac.m in Sources */,
+				6C958D71185AA36E008AFD55 /* STCPluginForTweetbotMac.m in Sources */,
+				6C958D6A185A9BEE008AFD55 /* SyncTwitterClient.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6C570D5D1866C809006E6AD1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6C958D51185A9B8D008AFD55 /* SyncTwitterClient */;
+			targetProxy = 6C570D5C1866C809006E6AD1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		6C958D5E185A9B8D008AFD55 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6C958D5F185A9B8D008AFD55 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		6C570D591866C7BA006E6AD1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(PROJECT_NAME)";
+			};
+			name = Debug;
+		};
+		6C570D5A1866C7BA006E6AD1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(PROJECT_NAME)";
+			};
+			name = Release;
+		};
+		6C958D62185A9B8D008AFD55 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				VERSION = 0.1;
+			};
+			name = Debug;
+		};
+		6C958D63185A9B8D008AFD55 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				SDKROOT = macosx;
+				VERSION = 0.1;
+			};
+			name = Release;
+		};
+		6C958D65185A9B8D008AFD55 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SyncTwitterClient/SyncTwitterClient-Prefix.pch";
+				INFOPLIST_FILE = "SyncTwitterClient/SyncTwitterClient-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		6C958D66185A9B8D008AFD55 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SyncTwitterClient/SyncTwitterClient-Prefix.pch";
+				INFOPLIST_FILE = "SyncTwitterClient/SyncTwitterClient-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		6C570D581866C7BA006E6AD1 /* Build configuration list for PBXAggregateTarget "Archive" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6C570D591866C7BA006E6AD1 /* Debug */,
+				6C570D5A1866C7BA006E6AD1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6C958D4D185A9B8D008AFD55 /* Build configuration list for PBXProject "SyncTwitterClient" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6C958D62185A9B8D008AFD55 /* Debug */,
+				6C958D63185A9B8D008AFD55 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6C958D64185A9B8D008AFD55 /* Build configuration list for PBXNativeTarget "SyncTwitterClient" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6C958D65185A9B8D008AFD55 /* Debug */,
+				6C958D66185A9B8D008AFD55 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6C958D4A185A9B8D008AFD55 /* Project object */;
+}
