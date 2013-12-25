@@ -95,12 +95,6 @@
 
 @end
 
-@interface STCPluginForTwitterMac ()
-
-@property (nonatomic) SyncTwitterClient *client;
-
-@end
-
 @implementation STCPluginForTwitterMac
 
 /**

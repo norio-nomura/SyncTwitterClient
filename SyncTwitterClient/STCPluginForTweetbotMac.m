@@ -24,12 +24,6 @@ static NSString *const STCPluginForTweetbotMacNotification = @"STCPluginForTweet
 
 @end
 
-@interface STCPluginForTweetbotMac ()
-
-@property (nonatomic) SyncTwitterClient *client;
-
-@end
-
 @implementation STCPluginForTweetbotMac
 
 /**
