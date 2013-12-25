@@ -20,13 +20,11 @@
 @protocol SyncTwitterClientPlugin <NSObject>
 
 /*!
- *  The initializer should hold reference of SyncTwitterClient.
- *
- *  @param client SyncTwitterClient
+ *  singleton
  *
  *  @return instance
  */
-- (instancetype)initWithSyncTwitterClient:(SyncTwitterClient*)client;
++ (instancetype)plugin;
 
 /*!
  *  On receiving notification from other SyncTwitterClient, SyncTwitterClient will call this method.

@@ -32,11 +32,25 @@ static NSString *const STCPluginForTweetbotMacNotification = @"STCPluginForTweet
 
 @implementation STCPluginForTweetbotMac
 
-- (instancetype)initWithSyncTwitterClient:(SyncTwitterClient*)client;
+/**
+ * @return the single static instance of the plugin object
+ */
++ (instancetype)plugin
+{
+    static dispatch_once_t onceToken;
+    static id plugin = nil;
+    
+    dispatch_once(&onceToken, ^{
+        plugin = [[self alloc] init];
+    });
+    
+    return plugin;
+}
+
+- (instancetype)init;
 {
     self = [super init];
     if (self) {
-        _client = client;
         NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
         NSUbiquitousKeyValueStore *store = [NSUbiquitousKeyValueStore defaultStore];
         [nc addObserver:self

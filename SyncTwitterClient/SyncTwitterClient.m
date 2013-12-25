@@ -54,9 +54,9 @@ static NSString *const SyncTwitterClientUpdateTimelinePositionNotification = @"S
         _lastReceivedStatusIDs = [NSMutableDictionary dictionary];
         NSRunningApplication *app = [NSRunningApplication currentApplication];
         if ([app.bundleIdentifier isEqualToString:@"com.tapbots.TweetbotMac"]) {
-            _plugin = [[STCPluginForTweetbotMac alloc]initWithSyncTwitterClient:self];
+            _plugin = [STCPluginForTweetbotMac plugin];
         } else if ([app.bundleIdentifier isEqualToString:@"com.twitter.twitter-mac"]) {
-            _plugin = [[STCPluginForTwitterMac alloc]initWithSyncTwitterClient:self];
+            _plugin = [STCPluginForTwitterMac plugin];
         }
         if (_plugin) {
             [[NSDistributedNotificationCenter defaultCenter]addObserver:self

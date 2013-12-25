@@ -103,12 +103,25 @@
 
 @implementation STCPluginForTwitterMac
 
-- (instancetype)initWithSyncTwitterClient:(SyncTwitterClient*)client;
+/**
+ * @return the single static instance of the plugin object
+ */
++ (instancetype)plugin
+{
+    static dispatch_once_t onceToken;
+    static id plugin = nil;
+    
+    dispatch_once(&onceToken, ^{
+        plugin = [[self alloc] init];
+    });
+    
+    return plugin;
+}
+
+- (instancetype)init;
 {
     self = [super init];
     if (self) {
-        _client = client;
-        
         // Add method to `TMHomeStreamViewController`
         Protocol *protocol = objc_getProtocol("ABUIScrollViewDelegate");
         if (protocol) {
