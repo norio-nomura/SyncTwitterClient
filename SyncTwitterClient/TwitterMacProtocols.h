@@ -59,18 +59,6 @@
  *  does not exist in UIScrollView
  */
 @property(readonly, nonatomic) double topContentOffset;
-@property(nonatomic) id<ABUIScrollViewDelegate> delegate;
-@end
-
-/*!
- *  clone of UIScrollViewDelegate
- */
-@protocol ABUIScrollViewDelegate
-@optional
-- (void)scrollViewDidEndScrollingAnimation:(id<ABUIScrollView>)arg1;
-- (void)scrollViewDidEndDragging:(id<ABUIScrollView>)arg1;
-- (void)scrollViewWillBeginDragging:(id<ABUIScrollView>)arg1;
-- (void)scrollViewDidScroll:(id<ABUIScrollView>)arg1 fromDevice:(int)arg2;
 @end
 
 /*!
