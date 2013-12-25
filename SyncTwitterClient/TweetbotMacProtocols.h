@@ -23,6 +23,15 @@
 
 @protocol PTHTweetbotCursor
 /*!
+ *  index of item specified by tid
+ *
+ *  @param tid is id
+ *
+ *  @return index of item specified by tid
+ */
+- (NSInteger)indexOfTID:(long long)tid;
+
+/*!
  *  array of PTHTweetbotStatus
  */
 @property(readonly, nonatomic) NSArray *items;

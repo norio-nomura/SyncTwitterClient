@@ -94,23 +94,16 @@ static NSString *const STCPluginForTweetbotMacNotification = @"STCPluginForTweet
             if (op != 0) {
                 Class class = objc_getClass("PTHTweetbotMainWindowController");
                 id<PTHTweetbotMainWindowController> mainWindow = objc_msgSend(class,@selector(mainWindowController));
-                NSNumber *userID = [[[mainWindow selectedAccount]currentUser]tidValue];
+                id<PTHTweetbotCurrentUser> currentUser = [[mainWindow selectedAccount]currentUser];
+                NSNumber *userID = [currentUser tidValue];
                 NSString *userIDString = [NSString stringWithFormat:@"%@.",userID];
                 
                 // check timeline user is current user
                 if ([key hasPrefix:userIDString]) {
-                    NSArray *statuses = [[[[mainWindow selectedAccount]currentUser]homeTimelineCursor]items];
-                    BOOL (^predicate)(id obj, NSUInteger idx, BOOL *stop) = ^BOOL(id<PTHTweetbotStatus> obj, NSUInteger idx, BOOL *stop){
-                        if ([[obj tidValue]isEqualToNumber:position]) {
-                            *stop = YES;
-                            return YES;
-                        }
-                        return NO;
-                    };
-                    NSUInteger index = [statuses indexOfObjectWithOptions:NSEnumerationConcurrent passingTest:predicate];
-                    
-                    // if position is found, set next status tid to position.
-                    if (index != NSNotFound && index+1 < statuses.count) {
+                    id<PTHTweetbotHomeTimelineCursor> cursor = [currentUser homeTimelineCursor];
+                    NSInteger index = [cursor indexOfTID:[position longLongValue]];
+                    NSArray *statuses = cursor.items;
+                    if (index != NSNotFound && index+1 <  statuses.count) {
                         id<PTHTweetbotStatus> status = statuses[index+1];
                         position = [status tidValue];
                     }
