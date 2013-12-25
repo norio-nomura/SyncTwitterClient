@@ -88,8 +88,7 @@
     if (![statusID isEqualToString:topStatusID]) {
         statusID = [topStatusID copy];
         if (statusID) {
-            SyncTwitterClient *client = [SyncTwitterClient client];
-            [client sendUpdateTimeline:[userID stringByAppendingString:@".timeline"] position:statusID];
+            [SyncTwitterClient sendUpdateTimeline:[userID stringByAppendingString:@".timeline"] position:statusID];
         }
     }
 }

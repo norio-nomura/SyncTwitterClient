@@ -93,6 +93,11 @@ static NSString *const SyncTwitterClientUpdateTimelinePositionNotification = @"S
 
 #pragma mark - Public Method
 
++ (void)sendUpdateTimeline:(NSString*)timeline position:(NSString*)statusID;
+{
+    [[SyncTwitterClient client]sendUpdateTimeline:timeline position:statusID];
+}
+
 - (void)sendUpdateTimeline:(NSString*)timeline position:(NSString*)statusID;
 {
     // Prevent sending same notification

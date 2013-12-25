@@ -110,7 +110,7 @@ static NSString *const STCPluginForTweetbotMacNotification = @"STCPluginForTweet
             }
             if (position) {
                 NSString *statusID = [NSString stringWithFormat:@"%@",position];
-                [_client sendUpdateTimeline:key position:statusID];
+                [SyncTwitterClient sendUpdateTimeline:key position:statusID];
             }
         }
     }
