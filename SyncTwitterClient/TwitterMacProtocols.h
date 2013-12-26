@@ -63,10 +63,9 @@
  *  UIScrollView.contentOffset
  */
 @property(nonatomic) CGPoint contentOffset;
-/*!
- *  does not exist in UIScrollView
- */
-@property(readonly, nonatomic) double topContentOffset;
+
+@property(readonly, nonatomic) CALayer *layer;
+
 @end
 
 /*!
