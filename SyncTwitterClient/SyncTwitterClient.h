@@ -8,39 +8,32 @@
 @protocol SyncTwitterClientPlugin;
 @interface SyncTwitterClient : NSObject
 /*!
- *  singleton
- *
- *  @return SyncTwitterClient
- */
-+ (instancetype) client;
-
-/*!
  *  Send update notification to other SyncTwitterClient
  *
- *  @param timeline which has been updated.
- *  @param statusID which should be displayed on top of timeline.
+ *  @param timeline   "#userID#.(timeline|mention)" indicates timeline which has been updated.
+ *  @param positionID is StatusID which should be displayed on top of timeline view.
+ *  @param latestID   is sender's latest StatusID on timeline.
  */
-- (void)sendUpdateTimeline:(NSString*)timeline position:(NSString*)statusID;
++ (void)sendUpdateTimeline:(NSString*)timeline position:(NSString*)positionID latest:(NSString*)latestID;
 
 @end
 
 @protocol SyncTwitterClientPlugin <NSObject>
 
 /*!
- *  The initializer should hold reference of SyncTwitterClient.
- *
- *  @param client SyncTwitterClient
+ *  singleton
  *
  *  @return instance
  */
-- (instancetype)initWithSyncTwitterClient:(SyncTwitterClient*)client;
++ (instancetype)plugin;
 
 /*!
  *  On receiving notification from other SyncTwitterClient, SyncTwitterClient will call this method.
  *
- *  @param timeline which has been updated.
- *  @param statusID which should be displayed on top of timeline.
+ *  @param timeline   "#userID#.(timeline|mention)" indicates timeline which has been updated.
+ *  @param positionID is StatusID which should be displayed on top of timeline view.
+ *  @param latestID   is sender's latest StatusID on timeline.
  */
-- (void)didReceiveUpdateTimeline:(NSString*)timeline position:(NSString*)statusID;
+- (void)didReceiveUpdateTimeline:(NSString*)timeline position:(NSString*)positionID latest:(NSString*)latestID;
 
 @end

@@ -29,6 +29,14 @@
 @end
 
 @protocol TwitterConcreteStatusesStream<TwitterStream>
+/*!
+ *  @return oldest status id string from loaded statuses
+ */
+- (id)oldestStatusID;
+/*!
+ *  @return newest status id string from loaded statuses
+ */
+- (id)newestStatusID;
 @end
 
 @protocol TwitterAccountStream<TwitterConcreteStatusesStream>
@@ -55,22 +63,9 @@
  *  UIScrollView.contentOffset
  */
 @property(nonatomic) CGPoint contentOffset;
-/*!
- *  does not exist in UIScrollView
- */
-@property(readonly, nonatomic) double topContentOffset;
-@property(nonatomic) id<ABUIScrollViewDelegate> delegate;
-@end
 
-/*!
- *  clone of UIScrollViewDelegate
- */
-@protocol ABUIScrollViewDelegate
-@optional
-- (void)scrollViewDidEndScrollingAnimation:(id<ABUIScrollView>)arg1;
-- (void)scrollViewDidEndDragging:(id<ABUIScrollView>)arg1;
-- (void)scrollViewWillBeginDragging:(id<ABUIScrollView>)arg1;
-- (void)scrollViewDidScroll:(id<ABUIScrollView>)arg1 fromDevice:(int)arg2;
+@property(readonly, nonatomic) CALayer *layer;
+
 @end
 
 /*!
@@ -109,7 +104,7 @@
 
 #pragma mark - Views
 
-@protocol TMCell<ABUITableViewCell>
+@protocol TMCell<ABUITableViewCell,NSObject>
 @end
 
 @protocol TMStatusCell<TMCell>
@@ -139,6 +134,19 @@
 
 @protocol TMStatusStreamViewController<TMStreamViewController>
 @property(retain, nonatomic) id<TwitterAccountStream> statusStream;
+/*!
+ *  is loading newer status
+ *
+ *  @return YES if loading newer.
+ */
+- (BOOL)isLoadingNewer;
+
+/*!
+ *  trigger load newer statuses
+ *
+ *  @param arg1 unkown(nil)
+ */
+- (void)loadNewer:(id)arg1;
 
 /*!
  *  trigger load older statuses

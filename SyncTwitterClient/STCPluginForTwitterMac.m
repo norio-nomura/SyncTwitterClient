@@ -9,18 +9,25 @@
 #import "STCPluginForTwitterMac.h"
 #import "TwitterMacProtocols.h"
 
+@interface STCPluginForTwitterMac (STCPluginForTwitterMac_TMStreamViewController)
+- (void)scrollViewDidScroll:(id<TMStatusStreamViewController>)vc;
+@end
+
 /*!
  *  declare for [super scrollViewDidScroll:tableView fromDevice:arg2];
  */
 @interface STCPluginForTwitterMac_ABUIScrollViewDelegate : NSObject
-- (void)scrollViewDidScroll:(id)arg1 fromDevice:(int)arg2;
 @end
 @implementation STCPluginForTwitterMac_ABUIScrollViewDelegate
-- (void)scrollViewDidEndScrollingAnimation:(id)arg1;
+- (void)scrollViewDidEndScrollingAnimation:(id<ABUIScrollView>)scrollView;
 {
-    
+    // Dummy
 }
-- (void)scrollViewDidScroll:(id)arg1 fromDevice:(int)arg2;
+- (void)scrollViewDidEndDragging:(id<ABUIScrollView>)scrollView;
+{
+    // Dummy
+}
+- (void)scrollViewDidScroll:(id<ABUIScrollView>)scrollView fromDevice:(int)arg2;
 {
     // Dummy
 }
@@ -34,29 +41,167 @@
 
 @implementation STCPluginForTwitterMac_TMStreamViewController
 
-- (void)TMHomeStreamViewController_scrollViewDidEndScrollingAnimation:(id<TMStreamTableView>)tableView;
+- (void)scrollViewDidEndScrollingAnimation:(id<ABUIScrollView>)scrollView;
 {
-    [super scrollViewDidEndScrollingAnimation:tableView];
-    
-    static NSString *userID = nil;
-    static NSString *statusID = nil;
+    [super scrollViewDidEndScrollingAnimation:scrollView];
+    [[STCPluginForTwitterMac plugin]scrollViewDidScroll:(id<TMStatusStreamViewController>)self];
+}
 
+- (void)scrollViewDidEndDragging:(id<ABUIScrollView>)scrollView;
+{
+    [super scrollViewDidEndDragging:scrollView];
+    [[STCPluginForTwitterMac plugin]scrollViewDidScroll:(id<TMStatusStreamViewController>)self];
+}
+
+- (void)scrollViewDidScroll:(id<ABUIScrollView>)scrollView fromDevice:(int)arg2;
+{
+    [super scrollViewDidScroll:scrollView fromDevice:arg2];
+    CGRect modelBounds = ((CALayer*)[scrollView.layer modelLayer]).bounds;
+    CGRect presentationBounds = ((CALayer*)[scrollView.layer presentationLayer]).bounds;
+    // Prevent call while scrolling by animation.
+    if (CGRectEqualToRect(modelBounds, presentationBounds)) {
+        [[STCPluginForTwitterMac plugin]scrollViewDidScroll:(id<TMStatusStreamViewController>)self];
+    }
+}
+
++ (BOOL)addMethod:(SEL)sel inProtocol:(Protocol*)protocol toClass:(Class)targetClass;
+{
+    BOOL result = NO;
+    if (sel && protocol && targetClass) {
+        // Get description for types
+        struct objc_method_description description = protocol_getMethodDescription(protocol, sel, NO, YES);
+        const char *types = description.types;
+        if (types) {
+            IMP imp = class_getMethodImplementation([self class], sel);
+            result = class_addMethod(targetClass, sel, imp, types);
+        }
+    }
+    return result;
+}
+
+@end
+
+@implementation STCPluginForTwitterMac {
+    BOOL _isSyncingWithTweetbot;
+    NSMutableDictionary *_timelineIsScrollingToStatusID;
+}
+
+/**
+ * @return the single static instance of the plugin object
+ */
++ (instancetype)plugin
+{
+    static dispatch_once_t onceToken;
+    static id plugin = nil;
+    
+    dispatch_once(&onceToken, ^{
+        plugin = [[self alloc] init];
+    });
+    
+    return plugin;
+}
+
+- (instancetype)init;
+{
+    self = [super init];
+    if (self) {
+        _isSyncingWithTweetbot = NO;
+        _timelineIsScrollingToStatusID = [NSMutableDictionary dictionary];
+
+        Class TMHomeStreamViewControllerClass =  objc_getClass("TMHomeStreamViewController");
+        Protocol *ABUIScrollViewDelegateProtocol = objc_getProtocol("ABUIScrollViewDelegate");
+        [STCPluginForTwitterMac_TMStreamViewController addMethod:@selector(scrollViewDidEndScrollingAnimation:)
+                                                      inProtocol:ABUIScrollViewDelegateProtocol
+                                                         toClass:TMHomeStreamViewControllerClass];
+        [STCPluginForTwitterMac_TMStreamViewController addMethod:@selector(scrollViewDidEndDragging:)
+                                                      inProtocol:ABUIScrollViewDelegateProtocol
+                                                         toClass:TMHomeStreamViewControllerClass];
+        [STCPluginForTwitterMac_TMStreamViewController addMethod:@selector(scrollViewDidScroll:fromDevice:)
+                                                      inProtocol:ABUIScrollViewDelegateProtocol
+                                                         toClass:TMHomeStreamViewControllerClass];
+    }
+    return self;
+}
+
+- (void)didReceiveUpdateTimeline:(NSString*)timeline position:(NSString*)positionID latest:(NSString *)latestID;
+{
+    id<Tweetie2AppDelegate> delegate = [NSApp delegate];
+    id<TMStreamViewController> vc = [[[delegate rootViewController]columnViewController]topViewController];
+    NSString *className = NSStringFromClass(object_getClass(vc));
+    
+    // If current view controller is Home Timeline, it needs scroll
+    if ([timeline hasSuffix:@"timeline"] && [className isEqualToString:@"TMHomeStreamViewController"]) {
+        id<TMStatusStreamViewController> statusStreamVC = (id<TMStatusStreamViewController>)vc;
+        id<TwitterAccountStream> stream = [statusStreamVC statusStream];
+        NSString *userID = [[[stream account]user]userID];
+        
+        // If current userID is notified userID, it needs scroll.
+        if ([timeline hasPrefix:userID]) {
+            
+            NSString *newestStatusID = [stream newestStatusID];
+            // newestStatusID <= latestID
+            if ([newestStatusID compare:latestID] != NSOrderedDescending) {
+                BOOL (^predicate)(id obj, NSUInteger idx, BOOL *stop) = ^BOOL(id<TwitterStatus> obj, NSUInteger idx, BOOL *stop){
+                    if ([[obj statusID] isEqualToString:positionID]) {
+                        *stop = YES;
+                        return YES;
+                    }
+                    return NO;
+                };
+                NSArray *statuses = [[stream statuses]copy];
+                NSUInteger index = [statuses indexOfObjectWithOptions:NSEnumerationConcurrent passingTest:predicate];
+                
+                // If nofitied statusID is in statuses, it needs scroll.
+                if (index != NSNotFound) {
+                    [statusStreamVC selectObjectWithStreamPositionID:positionID];
+                    NSIndexPath *indexPath = [[statusStreamVC tableView]indexPathForSelectedRow];
+                    [[statusStreamVC tableView]scrollToRowAtIndexPath:indexPath atScrollPosition:1 animated:YES];
+                    _isSyncingWithTweetbot = YES;
+                    _timelineIsScrollingToStatusID[timeline] = positionID;
+                } else {
+                    _isSyncingWithTweetbot = NO;
+                    NSString *oldestStatusID = [stream oldestStatusID];
+                    if ([positionID compare:newestStatusID] == NSOrderedDescending) {
+                        if (![statusStreamVC isLoadingNewer]) {
+                            [statusStreamVC loadNewer:nil];
+                        }
+                    } else if ([positionID compare:oldestStatusID] == NSOrderedAscending) {
+                        [statusStreamVC loadOlder:nil];
+                    } else {
+                        // Is position in GAP?
+                    }
+                }
+            }
+        }
+    }
+}
+
+- (void)scrollViewDidScroll:(id<TMStatusStreamViewController>)vc;
+{
+    static NSString *userID = nil;
+    static NSString *positionID = nil;
+    
     // userID
-    id<TMStatusStreamViewController>vc = (id<TMStatusStreamViewController>)self;
-    NSString *currentUserID = [[[[vc statusStream]account]user]userID];
+    id<TwitterAccountStream>stream = [vc statusStream];
+    NSString *currentUserID = [[[stream account]user]userID];
     if (![userID isEqualToString:currentUserID]) {
         userID = [currentUserID copy];
-        statusID = nil;
+        positionID = nil;
     }
-
+    
     // From top of the view, find first cell and second cell.
     // The array which is returned by `-[TMStreamTableView visibleCells]` is not sorted.
+    id<TMStreamTableView> tableView = [vc tableView];
     CGRect boundsOfTableView = [tableView bounds];
     CGFloat topOfTableView = boundsOfTableView.origin.y + boundsOfTableView.size.height;
     NSArray *visibleCells = [tableView visibleCells];
     id<TMStatusCell> firstCell = nil;
     id<TMStatusCell> secondCell = nil;
+    Class TMStatusCellClass = objc_getClass("TMStatusCell");
     for (id<TMStatusCell> cell in visibleCells) {
+        if (![cell isKindOfClass:TMStatusCellClass]) {
+            continue;
+        }
         NSString *statusID = [[cell status]statusID];
         if (firstCell) {
             if ([statusID compare:[[firstCell status]statusID]] == NSOrderedDescending) {
@@ -84,86 +229,21 @@
     // statusID
     NSString *topStatusID = [[firstCell status]statusID];
     
-    // Notify if statusID has changed.
-    if (![statusID isEqualToString:topStatusID]) {
-        statusID = [topStatusID copy];
-        if (statusID) {
-            SyncTwitterClient *client = [SyncTwitterClient client];
-            [client sendUpdateTimeline:[userID stringByAppendingString:@".timeline"] position:statusID];
+    NSString *timeline = [userID stringByAppendingString:@".timeline"];
+    NSString *scrollingToStatusID = _timelineIsScrollingToStatusID[timeline];
+    // Check if scrolling is caused by syncing.
+    if (scrollingToStatusID) {
+        // If scrollingToStatusID is topStatusID, scrolling by syncing ends.
+        if ([topStatusID isEqualToString:scrollingToStatusID]) {
+            [_timelineIsScrollingToStatusID removeObjectForKey:timeline];
         }
-    }
-}
-
-@end
-
-@interface STCPluginForTwitterMac ()
-
-@property (nonatomic) SyncTwitterClient *client;
-
-@end
-
-@implementation STCPluginForTwitterMac
-
-- (instancetype)initWithSyncTwitterClient:(SyncTwitterClient*)client;
-{
-    self = [super init];
-    if (self) {
-        _client = client;
-        
-        // Add method to `TMHomeStreamViewController`
-        Protocol *protocol = objc_getProtocol("ABUIScrollViewDelegate");
-        if (protocol) {
-            SEL targetSelector = @selector(scrollViewDidEndScrollingAnimation:);
-            
-            // Get description for types
-            struct objc_method_description description = protocol_getMethodDescription(protocol, targetSelector, NO, YES);
-            const char *types = description.types;
-            
-            //
-            if (types) {
-                Class impClass = [STCPluginForTwitterMac_TMStreamViewController class];
-                // Add
-                IMP imp = class_getMethodImplementation(impClass, @selector(TMHomeStreamViewController_scrollViewDidEndScrollingAnimation:));
-                class_addMethod(objc_getClass("TMHomeStreamViewController"), targetSelector, imp, types);
-                
-                // TODO: Add support `TMActivityStreamViewController`
-            }
-        }
-    }
-    return self;
-}
-
-- (void)didReceiveUpdateTimeline:(NSString*)timeline position:(NSString*)statusID;
-{
-    id<Tweetie2AppDelegate> delegate = [NSApp delegate];
-    id<TMStreamViewController> vc = [[[delegate rootViewController]columnViewController]topViewController];
-    NSString *className = NSStringFromClass(object_getClass(vc));
-    
-    // If current view controller is Home Timeline, it needs scroll
-    if ([timeline hasSuffix:@"timeline"] && [className isEqualToString:@"TMHomeStreamViewController"]) {
-        id<TMStatusStreamViewController> statusStreamVC = (id<TMStatusStreamViewController>)vc;
-        id<TwitterAccountStream> stream = [statusStreamVC statusStream];
-        NSString *userID = [[[stream account]user]userID];
-        
-        // If current userID is notified userID, it needs scroll.
-        if ([timeline hasPrefix:userID]) {
-            BOOL (^predicate)(id obj, NSUInteger idx, BOOL *stop) = ^BOOL(id<TwitterStatus> obj, NSUInteger idx, BOOL *stop){
-                if ([[obj statusID] isEqualToString:statusID]) {
-                    *stop = YES;
-                    return YES;
-                }
-                return NO;
-            };
-            NSArray *statuses = [[stream statuses]copy];
-            NSUInteger index = [statuses indexOfObjectWithOptions:NSEnumerationConcurrent passingTest:predicate];
-            
-            // If nofitied statusID is in statuses, it needs scroll.
-            if (index != NSNotFound) {
-                [statusStreamVC selectObjectWithStreamPositionID:statusID];
-                NSIndexPath *indexPath = [[statusStreamVC tableView]indexPathForSelectedRow];
-                [[statusStreamVC tableView]scrollToRowAtIndexPath:indexPath atScrollPosition:1 animated:YES];
-            } else {
-                [statusStreamVC loadOlder:nil];
+    } else {
+        // Notify if statusID has changed.
+        if (![positionID isEqualToString:topStatusID]) {
+            positionID = [topStatusID copy];
+            if (_isSyncingWithTweetbot && positionID) {
+                NSString *latestID = [stream newestStatusID];
+                [SyncTwitterClient sendUpdateTimeline:timeline position:positionID latest:latestID];
             }
         }
     }
