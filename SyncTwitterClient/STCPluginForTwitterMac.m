@@ -83,6 +83,7 @@
 
 @implementation STCPluginForTwitterMac {
     BOOL _isSyncingWithTweetbot;
+    NSMutableDictionary *_timelineIsScrollingToStatusID;
 }
 
 /**
@@ -105,6 +106,7 @@
     self = [super init];
     if (self) {
         _isSyncingWithTweetbot = NO;
+        _timelineIsScrollingToStatusID = [NSMutableDictionary dictionary];
 
         Class TMHomeStreamViewControllerClass =  objc_getClass("TMHomeStreamViewController");
         Protocol *ABUIScrollViewDelegateProtocol = objc_getProtocol("ABUIScrollViewDelegate");
@@ -155,6 +157,7 @@
                     NSIndexPath *indexPath = [[statusStreamVC tableView]indexPathForSelectedRow];
                     [[statusStreamVC tableView]scrollToRowAtIndexPath:indexPath atScrollPosition:1 animated:YES];
                     _isSyncingWithTweetbot = YES;
+                    _timelineIsScrollingToStatusID[timeline] = positionID;
                 } else {
                     _isSyncingWithTweetbot = NO;
                     NSString *oldestStatusID = [stream oldestStatusID];
@@ -226,12 +229,22 @@
     // statusID
     NSString *topStatusID = [[firstCell status]statusID];
     
-    // Notify if statusID has changed.
-    if (![positionID isEqualToString:topStatusID]) {
-        positionID = [topStatusID copy];
-        if (_isSyncingWithTweetbot && positionID) {
-            NSString *latestID = [stream newestStatusID];
-            [SyncTwitterClient sendUpdateTimeline:[userID stringByAppendingString:@".timeline"] position:positionID latest:latestID];
+    NSString *timeline = [userID stringByAppendingString:@".timeline"];
+    NSString *scrollingToStatusID = _timelineIsScrollingToStatusID[timeline];
+    // Check if scrolling is caused by syncing.
+    if (scrollingToStatusID) {
+        // If scrollingToStatusID is topStatusID, scrolling by syncing ends.
+        if ([topStatusID isEqualToString:scrollingToStatusID]) {
+            [_timelineIsScrollingToStatusID removeObjectForKey:timeline];
+        }
+    } else {
+        // Notify if statusID has changed.
+        if (![positionID isEqualToString:topStatusID]) {
+            positionID = [topStatusID copy];
+            if (_isSyncingWithTweetbot && positionID) {
+                NSString *latestID = [stream newestStatusID];
+                [SyncTwitterClient sendUpdateTimeline:timeline position:positionID latest:latestID];
+            }
         }
     }
 }
