@@ -64,14 +64,16 @@ static NSString *const STCPluginForTweetbotMacNotification = @"STCPluginForTweet
     return self;
 }
 
-- (void)didReceiveUpdateTimeline:(NSString*)timeline position:(NSString*)statusID;
+- (void)didReceiveUpdateTimeline:(NSString*)timeline position:(NSString*)positionID latest:(NSString *)latestID;
 {
     NSUbiquitousKeyValueStore *store = [NSUbiquitousKeyValueStore defaultStore];
 
     NSDictionary *dictionary = [store dictionaryForKey:timeline];
+    // Is tracking timeline?
     if (dictionary) {
-        NSDictionary *newDictionary = @{@"i": @([statusID integerValue]), @"l": dictionary[@"l"], @"op": @(0)};
+        NSDictionary *newDictionary = @{@"i": @([positionID integerValue]), @"l": dictionary[@"l"], @"op": @(0)};
         [store setDictionary:newDictionary forKey:timeline];
+        // post fake notification
         [[NSNotificationCenter defaultCenter]postNotificationName:NSUbiquitousKeyValueStoreDidChangeExternallyNotification
                                                            object:store
                                                          userInfo:@{NSUbiquitousKeyValueStoreChangedKeysKey: @[timeline]}];
@@ -90,28 +92,32 @@ static NSString *const STCPluginForTweetbotMacNotification = @"STCPluginForTweet
             NSNumber *position = values[@"i"];
             double op = [values[@"op"] doubleValue];
             
-            // If op is offseted, should use next status as possition.
-            if (op != 0) {
-                Class class = objc_getClass("PTHTweetbotMainWindowController");
-                id<PTHTweetbotMainWindowController> mainWindow = objc_msgSend(class,@selector(mainWindowController));
-                id<PTHTweetbotCurrentUser> currentUser = [[mainWindow selectedAccount]currentUser];
-                NSNumber *userID = [currentUser tidValue];
-                NSString *userIDString = [NSString stringWithFormat:@"%@.",userID];
+            Class class = objc_getClass("PTHTweetbotMainWindowController");
+            id<PTHTweetbotMainWindowController> mainWindow = objc_msgSend(class,@selector(mainWindowController));
+            id<PTHTweetbotCurrentUser> currentUser = [[mainWindow selectedAccount]currentUser];
+            NSNumber *userID = [currentUser tidValue];
+            NSString *userIDString = [NSString stringWithFormat:@"%@.",userID];
+            
+            // check timeline user is current user
+            if ([key hasPrefix:userIDString]) {
+                id<PTHTweetbotHomeTimelineCursor> cursor = [currentUser homeTimelineCursor];
+                NSArray *statuses = cursor.items;
                 
-                // check timeline user is current user
-                if ([key hasPrefix:userIDString]) {
-                    id<PTHTweetbotHomeTimelineCursor> cursor = [currentUser homeTimelineCursor];
+                // latest
+                id<PTHTweetbotStatus> latestStatus = [statuses firstObject];
+                NSNumber *latest = [latestStatus tidValue];
+                
+                // If op is offseted, should use next status as possition.
+                if (op != 0) {
                     NSInteger index = [cursor indexOfTID:[position longLongValue]];
-                    NSArray *statuses = cursor.items;
                     if (index != NSNotFound && index+1 <  statuses.count) {
                         id<PTHTweetbotStatus> status = statuses[index+1];
                         position = [status tidValue];
                     }
                 }
-            }
-            if (position) {
-                NSString *statusID = [NSString stringWithFormat:@"%@",position];
-                [SyncTwitterClient sendUpdateTimeline:key position:statusID];
+                if (position && latest) {
+                    [SyncTwitterClient sendUpdateTimeline:key position:[position stringValue] latest:[latest stringValue]];
+                }
             }
         }
     }

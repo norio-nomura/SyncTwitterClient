@@ -29,6 +29,14 @@
 @end
 
 @protocol TwitterConcreteStatusesStream<TwitterStream>
+/*!
+ *  @return oldest status id string from loaded statuses
+ */
+- (id)oldestStatusID;
+/*!
+ *  @return newest status id string from loaded statuses
+ */
+- (id)newestStatusID;
 @end
 
 @protocol TwitterAccountStream<TwitterConcreteStatusesStream>
@@ -97,7 +105,7 @@
 
 #pragma mark - Views
 
-@protocol TMCell<ABUITableViewCell>
+@protocol TMCell<ABUITableViewCell,NSObject>
 @end
 
 @protocol TMStatusCell<TMCell>
@@ -127,6 +135,19 @@
 
 @protocol TMStatusStreamViewController<TMStreamViewController>
 @property(retain, nonatomic) id<TwitterAccountStream> statusStream;
+/*!
+ *  is loading newer status
+ *
+ *  @return YES if loading newer.
+ */
+- (BOOL)isLoadingNewer;
+
+/*!
+ *  trigger load newer statuses
+ *
+ *  @param arg1 unkown(nil)
+ */
+- (void)loadNewer:(id)arg1;
 
 /*!
  *  trigger load older statuses

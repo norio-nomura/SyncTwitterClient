@@ -18,7 +18,7 @@
 @implementation STCPluginForTwitterMac_ABUIScrollViewDelegate
 - (void)scrollViewDidEndScrollingAnimation:(id)arg1;
 {
-    
+    // Dummy
 }
 - (void)scrollViewDidScroll:(id)arg1 fromDevice:(int)arg2;
 {
@@ -39,14 +39,15 @@
     [super scrollViewDidEndScrollingAnimation:tableView];
     
     static NSString *userID = nil;
-    static NSString *statusID = nil;
+    static NSString *positionID = nil;
 
     // userID
     id<TMStatusStreamViewController>vc = (id<TMStatusStreamViewController>)self;
-    NSString *currentUserID = [[[[vc statusStream]account]user]userID];
+    id<TwitterAccountStream>stream = [vc statusStream];
+    NSString *currentUserID = [[[stream account]user]userID];
     if (![userID isEqualToString:currentUserID]) {
         userID = [currentUserID copy];
-        statusID = nil;
+        positionID = nil;
     }
 
     // From top of the view, find first cell and second cell.
@@ -85,10 +86,11 @@
     NSString *topStatusID = [[firstCell status]statusID];
     
     // Notify if statusID has changed.
-    if (![statusID isEqualToString:topStatusID]) {
-        statusID = [topStatusID copy];
-        if (statusID) {
-            [SyncTwitterClient sendUpdateTimeline:[userID stringByAppendingString:@".timeline"] position:statusID];
+    if (![positionID isEqualToString:topStatusID]) {
+        positionID = [topStatusID copy];
+        if (positionID) {
+            NSString *latestID = [stream newestStatusID];
+            [SyncTwitterClient sendUpdateTimeline:[userID stringByAppendingString:@".timeline"] position:positionID latest:latestID];
         }
     }
 }
@@ -139,7 +141,7 @@
     return self;
 }
 
-- (void)didReceiveUpdateTimeline:(NSString*)timeline position:(NSString*)statusID;
+- (void)didReceiveUpdateTimeline:(NSString*)timeline position:(NSString*)positionID latest:(NSString *)latestID;
 {
     id<Tweetie2AppDelegate> delegate = [NSApp delegate];
     id<TMStreamViewController> vc = [[[delegate rootViewController]columnViewController]topViewController];
@@ -153,23 +155,37 @@
         
         // If current userID is notified userID, it needs scroll.
         if ([timeline hasPrefix:userID]) {
-            BOOL (^predicate)(id obj, NSUInteger idx, BOOL *stop) = ^BOOL(id<TwitterStatus> obj, NSUInteger idx, BOOL *stop){
-                if ([[obj statusID] isEqualToString:statusID]) {
-                    *stop = YES;
-                    return YES;
-                }
-                return NO;
-            };
-            NSArray *statuses = [[stream statuses]copy];
-            NSUInteger index = [statuses indexOfObjectWithOptions:NSEnumerationConcurrent passingTest:predicate];
             
-            // If nofitied statusID is in statuses, it needs scroll.
-            if (index != NSNotFound) {
-                [statusStreamVC selectObjectWithStreamPositionID:statusID];
-                NSIndexPath *indexPath = [[statusStreamVC tableView]indexPathForSelectedRow];
-                [[statusStreamVC tableView]scrollToRowAtIndexPath:indexPath atScrollPosition:1 animated:YES];
-            } else {
-                [statusStreamVC loadOlder:nil];
+            NSString *newestStatusID = [stream newestStatusID];
+            // newestStatusID <= latestID
+            if ([newestStatusID compare:latestID] != NSOrderedDescending) {
+                BOOL (^predicate)(id obj, NSUInteger idx, BOOL *stop) = ^BOOL(id<TwitterStatus> obj, NSUInteger idx, BOOL *stop){
+                    if ([[obj statusID] isEqualToString:positionID]) {
+                        *stop = YES;
+                        return YES;
+                    }
+                    return NO;
+                };
+                NSArray *statuses = [[stream statuses]copy];
+                NSUInteger index = [statuses indexOfObjectWithOptions:NSEnumerationConcurrent passingTest:predicate];
+                
+                // If nofitied statusID is in statuses, it needs scroll.
+                if (index != NSNotFound) {
+                    [statusStreamVC selectObjectWithStreamPositionID:positionID];
+                    NSIndexPath *indexPath = [[statusStreamVC tableView]indexPathForSelectedRow];
+                    [[statusStreamVC tableView]scrollToRowAtIndexPath:indexPath atScrollPosition:1 animated:YES];
+                } else {
+                    NSString *oldestStatusID = [stream oldestStatusID];
+                    if ([positionID compare:newestStatusID] == NSOrderedDescending) {
+                        if (![statusStreamVC isLoadingNewer]) {
+                            [statusStreamVC loadNewer:nil];
+                        }
+                    } else if ([positionID compare:oldestStatusID] == NSOrderedAscending) {
+                        [statusStreamVC loadOlder:nil];
+                    } else {
+                        // Is position in GAP?
+                    }
+                }
             }
         }
     }
