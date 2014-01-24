@@ -66,7 +66,7 @@
 {
     NSUbiquitousKeyValueStore *store = [NSUbiquitousKeyValueStore defaultStore];
 
-    NSDictionary *dictionary = [store dictionaryForKey:timeline];
+    NSDictionary *dictionary = [store dictionaryRepresentation][timeline];
     // Is tracking timeline?
     if (dictionary) {
         NSDictionary *newDictionary = @{@"i": @([positionID integerValue]), @"l": dictionary[@"l"], @"op": @(0)};
