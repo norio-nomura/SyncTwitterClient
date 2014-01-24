@@ -10,16 +10,23 @@
 #import "STCPluginForTweetbotMac.h"
 #import "TweetbotMacProtocols.h"
 
-static NSString *const STCPluginForTweetbotMacNotification = @"STCPluginForTweetbotMacNotification";
+@interface STCPluginForTweetbotMac()
++ (void)sendUpdateValues:(NSDictionary*)values forKey:(NSString*)aKey;
+@end
 
 @implementation NSUbiquitousKeyValueStore (STCPluginForTweetbotMac)
 
 - (void)STCPluginForTweetbotMac_setDictionary:(NSDictionary *)aDictionary forKey:(NSString *)aKey;
 {
     [self STCPluginForTweetbotMac_setDictionary:aDictionary forKey:aKey];
-    [[NSNotificationCenter defaultCenter]postNotificationName:STCPluginForTweetbotMacNotification
-                                                       object:self
-                                                     userInfo:@{NSUbiquitousKeyValueStoreChangedKeysKey:@[aKey]}];
+    [STCPluginForTweetbotMac sendUpdateValues:aDictionary forKey:aKey];
+}
+
+- (NSDictionary *)STCPluginForTweetbotMac_dictionaryForKey:(NSString *)aKey
+{
+    NSDictionary *values = [self STCPluginForTweetbotMac_dictionaryForKey:aKey];
+    [STCPluginForTweetbotMac sendUpdateValues:values forKey:aKey];
+    return values;
 }
 
 @end
@@ -45,20 +52,11 @@ static NSString *const STCPluginForTweetbotMacNotification = @"STCPluginForTweet
 {
     self = [super init];
     if (self) {
-        NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-        NSUbiquitousKeyValueStore *store = [NSUbiquitousKeyValueStore defaultStore];
-        [nc addObserver:self
-               selector:@selector(receiveNSUbiquitousKeyValueStoreDidChangeExternallyNotification:)
-                   name:NSUbiquitousKeyValueStoreDidChangeExternallyNotification
-                 object:store];
-        [nc addObserver:self
-               selector:@selector(receiveNSUbiquitousKeyValueStoreDidChangeExternallyNotification:)
-                   name:STCPluginForTweetbotMacNotification
-                 object:store];
-        
         Class target = [NSUbiquitousKeyValueStore class];
         method_exchangeImplementations(class_getInstanceMethod(target, @selector(setDictionary:forKey:)),
                                        class_getInstanceMethod(target, @selector(STCPluginForTweetbotMac_setDictionary:forKey:)));
+        method_exchangeImplementations(class_getInstanceMethod(target, @selector(dictionaryForKey:)),
+                                       class_getInstanceMethod(target, @selector(STCPluginForTweetbotMac_dictionaryForKey:)));
 
     }
     return self;
@@ -80,44 +78,43 @@ static NSString *const STCPluginForTweetbotMacNotification = @"STCPluginForTweet
     }
 }
 
-#pragma mark - NSUbiquitousKeyValueStoreDidChangeExternallyNotification
-
-- (void)receiveNSUbiquitousKeyValueStoreDidChangeExternallyNotification:(NSNotification *)note;
++ (void)sendUpdateValues:(NSDictionary*)values forKey:(NSString*)aKey;
 {
-    
-    NSUbiquitousKeyValueStore *store = note.object;
-    for (NSString *key in note.userInfo[NSUbiquitousKeyValueStoreChangedKeysKey]) {
-        if ([key hasSuffix:@"timeline"]) {
-            NSDictionary *values = [store dictionaryForKey:key];
-            NSNumber *position = values[@"i"];
-            double op = [values[@"op"] doubleValue];
+    [[STCPluginForTweetbotMac plugin]sendUpdateValues:values forKey:aKey];
+}
+
+
+- (void)sendUpdateValues:(NSDictionary*)values forKey:(NSString*)aKey;
+{
+    if ([aKey hasSuffix:@"timeline"]) {
+        NSNumber *position = values[@"i"];
+        double op = [values[@"op"] doubleValue];
+        
+        Class class = objc_getClass("PTHTweetbotMainWindowController");
+        id<PTHTweetbotMainWindowController> mainWindow = objc_msgSend(class,@selector(mainWindowController));
+        id<PTHTweetbotCurrentUser> currentUser = [[mainWindow selectedAccount]currentUser];
+        NSNumber *userID = [currentUser tidValue];
+        NSString *userIDString = [NSString stringWithFormat:@"%@.",userID];
+        
+        // check timeline user is current user
+        if ([aKey hasPrefix:userIDString]) {
+            id<PTHTweetbotHomeTimelineCursor> cursor = [currentUser homeTimelineCursor];
+            NSArray *statuses = cursor.items;
             
-            Class class = objc_getClass("PTHTweetbotMainWindowController");
-            id<PTHTweetbotMainWindowController> mainWindow = objc_msgSend(class,@selector(mainWindowController));
-            id<PTHTweetbotCurrentUser> currentUser = [[mainWindow selectedAccount]currentUser];
-            NSNumber *userID = [currentUser tidValue];
-            NSString *userIDString = [NSString stringWithFormat:@"%@.",userID];
+            // latest
+            id<PTHTweetbotStatus> latestStatus = [statuses firstObject];
+            NSNumber *latest = [latestStatus tidValue];
             
-            // check timeline user is current user
-            if ([key hasPrefix:userIDString]) {
-                id<PTHTweetbotHomeTimelineCursor> cursor = [currentUser homeTimelineCursor];
-                NSArray *statuses = cursor.items;
-                
-                // latest
-                id<PTHTweetbotStatus> latestStatus = [statuses firstObject];
-                NSNumber *latest = [latestStatus tidValue];
-                
-                // If op is offseted, should use next status as possition.
-                if (op != 0) {
-                    NSInteger index = [cursor indexOfTID:[position longLongValue]];
-                    if (index != NSNotFound && index+1 <  statuses.count) {
-                        id<PTHTweetbotStatus> status = statuses[index+1];
-                        position = [status tidValue];
-                    }
+            // If op is offseted, should use next status as possition.
+            if (op != 0) {
+                NSInteger index = [cursor indexOfTID:[position longLongValue]];
+                if (index != NSNotFound && index+1 <  statuses.count) {
+                    id<PTHTweetbotStatus> status = statuses[index+1];
+                    position = [status tidValue];
                 }
-                if (position && latest) {
-                    [SyncTwitterClient sendUpdateTimeline:key position:[position stringValue] latest:[latest stringValue]];
-                }
+            }
+            if (position && latest) {
+                [SyncTwitterClient sendUpdateTimeline:aKey position:[position stringValue] latest:[latest stringValue]];
             }
         }
     }
