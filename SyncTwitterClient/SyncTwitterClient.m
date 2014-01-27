@@ -113,4 +113,14 @@ static NSString *const SyncTwitterClientUpdateTimelinePositionNotification = @"S
     }
 }
 
++ (NSString*)lastReceivedPositionForTimeline:(NSString*)timeline;
+{
+    return [[SyncTwitterClient client]lastReceivedPositionForTimeline:timeline];
+}
+
+- (NSString*)lastReceivedPositionForTimeline:(NSString*)timeline;
+{
+    return _lastReceivedStatusIDs[timeline];
+}
+
 @end
