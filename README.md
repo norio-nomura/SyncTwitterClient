@@ -3,7 +3,7 @@ SyncTwitterClient
 *SyncTwitterClient* is SIMBL plugin which sync timeline positions between *Twitter for Mac* and *Tweetbot for Mac*.
 I tested on following:
 - [Twitter for Mac 3.0.1 (3.0.1)](https://itunes.apple.com/jp/app/twitter/id409789998?mt=12)
-- [Tweetbot for Mac 1.4 (14001)](https://itunes.apple.com/jp/app/tweetbot-for-twitter/id557168941?mt=12) with iCloud sync.
+- [Tweetbot for Mac 1.4.1 (14100)](https://itunes.apple.com/jp/app/tweetbot-for-twitter/id557168941?mt=12) with iCloud sync.
 While running *Tweetbot for Mac*, *Twitter for Mac*'s timeline position will be synced with *Tweetbot for Mac, iPhone and iPad*.
 
 **SyncTwitterClient does not support using TweetMarker on Tweetbot.**

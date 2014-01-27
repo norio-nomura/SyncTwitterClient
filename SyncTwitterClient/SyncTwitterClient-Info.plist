@@ -38,7 +38,7 @@
 			<key>BundleIdentifier</key>
 			<string>com.tapbots.TweetbotMac</string>
 			<key>MinBundleVersion</key>
-			<string>14001</string>
+			<string>14100</string>
 		</dict>
 	</array>
 </dict>
