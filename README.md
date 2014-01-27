@@ -11,7 +11,7 @@ While running *Tweetbot for Mac*, *Twitter for Mac*'s timeline position will be 
 How to install
 --------------
 1. Make sure you have installed SIMBL which supports sandbox. (e.g. [EasySIMBL](https://github.com/norio-nomura/EasySIMBL))
-2. Download [SyncTwitterClient-0.2.zip](http://github.com/norio-nomura/SyncTwitterClient/releases/download/0.2/SyncTwitterClient-0.2.zip) (2013/12/26 updated)
+2. Download [SyncTwitterClient-0.3.zip](http://github.com/norio-nomura/SyncTwitterClient/releases/download/0.3/SyncTwitterClient-0.3.zip) (2014/01/27 updated)
 3. Copy `SyncTwitterClient.bundle` to `~/Library/Application Support/SIMBL/Plugins`.
    (If using EasySIMBL, double clicking the bundle will install it.)
 4. Restart *Tweetbot for Mac* and *Twitter for Mac*.
@@ -23,7 +23,7 @@ License
 	            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
 	                    Version 2, December 2004
 	
-	 Copyright (C) 2013 Norio Nomura
+	 Copyright (C) 2014 Norio Nomura
 	
 	 Everyone is permitted to copy and distribute verbatim or modified
 	 copies of this license document, and changing it is allowed as long
