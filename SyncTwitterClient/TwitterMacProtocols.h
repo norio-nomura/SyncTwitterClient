@@ -7,21 +7,21 @@
 
 #pragma mark - Models
 
-@protocol TwitterUser
+@protocol TwitterUser<NSObject>
 @property(copy, nonatomic) NSString *fullName;
 @property(copy, nonatomic) NSString *username;
 @property(copy, nonatomic) NSString *userID;
 @end
 
-@protocol TwitterAccount
+@protocol TwitterAccount<NSObject>
 @property(retain, nonatomic) id<TwitterUser> user;
 @end
 
-@protocol TwitterStatus
+@protocol TwitterStatus<NSObject>
 @property(copy, nonatomic) NSString *statusID;
 @end
 
-@protocol TwitterStream
+@protocol TwitterStream<NSObject>
 /*!
  *  array of TwitterStatus
  */
@@ -48,7 +48,7 @@
 /*!
  *  clone of UIView
  */
-@protocol ABUIView
+@protocol ABUIView<NSObject>
 @property(nonatomic) CGRect bounds;
 @property(nonatomic) CGRect frame;
 @end
@@ -99,12 +99,12 @@
 @property(readonly, nonatomic) id<ABUITableView> tableView;
 @end
 
-@protocol ABUIViewController
+@protocol ABUIViewController<NSObject>
 @end
 
 #pragma mark - Views
 
-@protocol TMCell<ABUITableViewCell,NSObject>
+@protocol TMCell<ABUITableViewCell>
 @end
 
 @protocol TMStatusCell<TMCell>
