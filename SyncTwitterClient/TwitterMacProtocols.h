@@ -154,6 +154,14 @@
  *  @param arg1 unkown(nil)
  */
 - (void)loadOlder:(id)arg1;
+
+/*!
+ *  called when statusStream has been updated.
+ *
+ *  @param note note.object will be statusStream.
+ */
+- (void)streamDidUpdate:(NSNotification*)note;
+
 @end
 
 @protocol TMColumnViewController<ABUIViewController>
