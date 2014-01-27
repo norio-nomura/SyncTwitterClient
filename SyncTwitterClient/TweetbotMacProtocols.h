@@ -7,7 +7,7 @@
 
 #pragma mark - Models
 
-@protocol PTHTweetbotObject
+@protocol PTHTweetbotObject<NSObject>
 /*!
  *  tid is id
  */
@@ -21,7 +21,7 @@
 @protocol PTHTweetbotStatus<PTHTweetbotObject>
 @end
 
-@protocol PTHTweetbotCursor
+@protocol PTHTweetbotCursor<NSObject>
 /*!
  *  index of item specified by tid
  *
@@ -51,14 +51,14 @@
 @property(readonly, nonatomic) id<PTHTweetbotHomeTimelineCursor> homeTimelineCursor;
 @end
 
-@protocol PTHTweetbotAccount
+@protocol PTHTweetbotAccount<NSObject>
 /*!
  *  PTHTweetbotCurrentUser
  */
 @property(retain, nonatomic) id<PTHTweetbotCurrentUser> currentUser;
 @end
 
-@protocol PTHTweetbotMainWindowController
+@protocol PTHTweetbotMainWindowController<NSObject>
 /*!
  *  Singleton
  *

@@ -11,6 +11,7 @@
 
 @interface STCPluginForTwitterMac (STCPluginForTwitterMac_TMStreamViewController)
 - (void)scrollViewDidScroll:(id<TMStatusStreamViewController>)vc;
+- (void)statusStreamDidUpdate:(id<TMStatusStreamViewController>)vc;
 @end
 
 /*!
@@ -81,6 +82,18 @@
 
 @end
 
+@implementation NSObject (STCPluginForTwitterMac_TMStatusStreamViewController)
+
+- (void)STCPluginForTwitterMac_streamDidUpdate:(NSNotification*)note;
+{
+    [self STCPluginForTwitterMac_streamDidUpdate:note];
+    if ([[(id<TMStatusStreamViewController>)self statusStream]isEqual:note.object]) {
+        [[STCPluginForTwitterMac plugin]statusStreamDidUpdate:(id<TMStatusStreamViewController>)self];
+    }
+}
+
+@end
+
 @implementation STCPluginForTwitterMac {
     BOOL _isSyncingWithTweetbot;
     NSMutableDictionary *_timelineIsScrollingToStatusID;
@@ -119,6 +132,10 @@
         [STCPluginForTwitterMac_TMStreamViewController addMethod:@selector(scrollViewDidScroll:fromDevice:)
                                                       inProtocol:ABUIScrollViewDelegateProtocol
                                                          toClass:TMHomeStreamViewControllerClass];
+        
+        Class target = objc_getClass("TMStatusStreamViewController");
+        method_exchangeImplementations(class_getInstanceMethod(target, @selector(streamDidUpdate:)),
+                                       class_getInstanceMethod(target, @selector(STCPluginForTwitterMac_streamDidUpdate:)));
     }
     return self;
 }
@@ -247,6 +264,47 @@
             }
         }
     }
+}
+
+- (void)statusStreamDidUpdate:(id<TMStatusStreamViewController>)vc;
+{
+    NSString *className = NSStringFromClass(object_getClass(vc));
+   
+    // If view controller is Home Timeline, it needs check
+    if ([className isEqualToString:@"TMHomeStreamViewController"]) {
+        
+        if (!_isSyncingWithTweetbot) {
+            id<TwitterAccountStream> stream = [vc statusStream];
+            NSString *userID = [[[stream account]user]userID];
+            NSString *timeline = [userID stringByAppendingString:@".timeline"];
+            NSString *lastReceivedPositionID = [SyncTwitterClient lastReceivedPositionForTimeline:timeline];
+            if (lastReceivedPositionID) {
+                NSString *newestStatusID = [stream newestStatusID];
+                // lastReceivedPositionID <= newestStatusID
+                if ([newestStatusID compare:lastReceivedPositionID] != NSOrderedDescending) {
+                    BOOL (^predicate)(id obj, NSUInteger idx, BOOL *stop) = ^BOOL(id<TwitterStatus> obj, NSUInteger idx, BOOL *stop){
+                        if ([[obj statusID] isEqualToString:lastReceivedPositionID]) {
+                            *stop = YES;
+                            return YES;
+                        }
+                        return NO;
+                    };
+                    NSArray *statuses = [[stream statuses]copy];
+                    NSUInteger index = [statuses indexOfObjectWithOptions:NSEnumerationConcurrent passingTest:predicate];
+                    
+                    // If last received positionID is in statuses, it needs scroll.
+                    if (index != NSNotFound) {
+                        [vc selectObjectWithStreamPositionID:lastReceivedPositionID];
+                        NSIndexPath *indexPath = [[vc tableView]indexPathForSelectedRow];
+                        [[vc tableView]scrollToRowAtIndexPath:indexPath atScrollPosition:1 animated:YES];
+                        _isSyncingWithTweetbot = YES;
+                        _timelineIsScrollingToStatusID[timeline] = lastReceivedPositionID;
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 @end

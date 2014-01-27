@@ -16,6 +16,15 @@
  */
 + (void)sendUpdateTimeline:(NSString*)timeline position:(NSString*)positionID latest:(NSString*)latestID;
 
+/*!
+ *  Last received positionID for timeline
+ *
+ *  @param timeline "#userID#.(timeline|mention)" indicates timeline which has been updated.
+ *
+ *  @return positionID If client did not receive any positionID for timeline, nil may be returned.
+ */
++ (NSString*)lastReceivedPositionForTimeline:(NSString*)timeline;
+
 @end
 
 @protocol SyncTwitterClientPlugin <NSObject>
